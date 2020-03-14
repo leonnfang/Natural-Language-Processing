@@ -144,11 +144,11 @@ def testing(testing_file, centroids, doc_freq, num_docs, output_file):
 
 
 if __name__ == '__main__':
-    train_doc = input("Enter the file containing a list of labeled training documents: ")
-    test_doc = input("Enter the file containing a list of unlabeled test documents: ")
+    train_doc = input("Enter the file of labeled training documents: ")
+    test_doc = input("Enter the file of unlabeled test documents: ")
     print("training...")
     centroids, doc_freq, num_docs = train(train_doc)
-    output = input("Enter the name of output file: ")
+    output = input("Enter the output file: ")
     print("testing...")
     testing(test_doc, centroids, doc_freq, num_docs, output)
     print("file was generated successfully")

@@ -1,5 +1,5 @@
 # Natural-Language-Processing
-## project 1 - text categorization 
+## project 1 - text categorization and label prediction
 ### Needed Libraries:
 - numpy
 - nltk
@@ -7,6 +7,10 @@
 ### How to install:
 '''
 pip3 install [library]
+'''
+### How to run:
+'''
+python3 p1.py
 '''
 ### ML models:
 - idf-ft / Rocchio
