@@ -5,13 +5,14 @@
 - nltk
 - colletions
 ### How to install:
-'''
+```
 pip3 install [library]
-'''
+```
 ### How to run:
-'''
+```
 python3 p1.py
-'''
+```
+and follow the prompts
 ### ML models:
 - idf-ft / Rocchio
 ### How to tokenize the traning files and test files:
