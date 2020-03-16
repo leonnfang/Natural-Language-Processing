@@ -12,14 +12,17 @@ import numpy as np
 tokenizer = RegexpTokenizer(r'\w+')
 stemmer = SnowballStemmer('english')
 label_word_dict = {}
+label_doc_word_dict = {}
 label_numDiff = {}
 label_numTot = {}
 label_freq = {}
 tot_label = 0
 def parsing(path):
 	words = [stemmer.stem(w) for w in tokenizer.tokenize(open(path, "r").read().lower())]
+	#words = [word for word in words if word not in stopwords.words('english')]
+	filtered_words = [word for word in words if word not in stopwords.words('english')]
 	#print(path)
-	return words
+	return filtered_words
 
 def training(input):
     doc = open(input, "r")
@@ -29,11 +32,14 @@ def training(input):
     		label_word_dict[label] = []
     		label_freq[label] = 1
 
+    	if label not in label_doc_word_dict.keys():
+    		label_doc_word_dict[label] = {}
+    	
     	label_freq[label] += 1
     	words = parsing(path)
     	label_word_dict[label] = label_word_dict[label]+words
+    	label_doc_word_dict[label][path] = collections.Counter(words)
 
-    #print(label_word_dict)
 
     for label in label_word_dict.keys():
     	label_numTot[label] = len(label_word_dict[label])
@@ -45,13 +51,14 @@ def training(input):
     #print(label_numDiff)
     #print(label_numTot)
     #print(len(label_word_dict))
+    #print(label_doc_word_dict)
     tot_label = sum(label_freq.values())
     for label in label_freq:
     	label_freq[label] = label_freq[label] / tot_label
     #print(label_freq)
 
 def get_percent(count,label):
-	k = 0.75
+	k = 3.5
 	total = label_numTot[label]
 	distinct = label_numDiff[label]
 	res = 0
@@ -67,18 +74,49 @@ def get_percent(count,label):
 	for word in count.keys():
 		if word in label_word_dict[label]:
 			percent = (label_word_dict[label][word] + k * unknown) * count[word] / (total + k*unknown*distinct)
+			#percent = (label_word_dict[label][word] + k * unknown) * count[word] / (total)
+
 		else:
 			#print('did not find the word, need to do smoothing')
-			percent = count[word]*k / (total + k*unknown*distinct)
+			#percent = count[word]*k / (total)
+			percent = (count[word]*k) / (total + k*unknown*distinct)
 
 		res += percent
 
 	#print(math.log10(label_freq[label]/ sum(label_freq.values())))
 	#print(res)
 	#print(label_freq[label])
-	res = math.log10(res) + math.log10(label_freq[label])*0.7
+	res = math.log10(res) #+ math.log10(label_freq[label])
 	#res = res + label_freq[label] * tot_label * 10000
 	return res
+
+def compute_percent(count,label):
+	total = len(label_doc_word_dict[label])
+	doc_words_dict = label_doc_word_dict[label]
+	num_doc = 0
+	percent = 0
+	for path in doc_words_dict.keys():
+		for word in count.keys():
+			if word in doc_words_dict[path].keys():
+				num_doc += 1
+				break
+
+	for word in count.keys():
+		for doc in doc_words_dict.keys():
+			if word in doc_words_dict[doc].keys():
+				num_doc += 1
+
+		percent += num_doc / total
+		num_doc = 0
+
+	#print(label)
+	#print('total docs: ' + str(total))
+	#print('percent: ',percent)
+	#print('label freq: ' + str(label_freq[label]))
+	#print('\n')
+	return math.log10(percent) + math.log10(label_freq[label])
+
+
 
 
 def findmax(label_prob):
@@ -107,20 +145,22 @@ def testing(test_doc,outputfile):
 			label_prob[label] = percent
 
 		result = findmax(label_prob)
-		print(label_prob)
+		#print(label_prob)
 		#print(result)
 		outputfile.write(f'{line} {result}\n'.encode('ascii'))
 		#if c == 3:
 		#	break
 
 if __name__ == '__main__':
-	#train_doc = input('input file: ')
-	train_doc = 'corpus1_train.labels'
+	train_doc = input('input training file: ')
+	#train_doc = 'corpus1_train.labels'
+	print('training...')
 	training(train_doc)
 	print('training complete')
-	#test_doc = input('test file: ')
-	test_doc = 'corpus1_test.list'
-	outputfile = '123'
-	#outputfile = input('output file: ')
+	test_doc = input('input testing file: ')
+	#test_doc = 'corpus1_test.list'
+	#outputfile = '123'
+	outputfile = input('output file: ')
+	print('testing...')
 	testing(test_doc,outputfile)
 	print('file was generated')
