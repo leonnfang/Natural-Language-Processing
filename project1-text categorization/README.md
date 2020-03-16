@@ -1,6 +1,5 @@
-# Natural-Language-Processing
-## project 1 - text categorization and label prediction - Rocchio
-### Needed Libraries:
+# project 1 - text categorization and label prediction - Rocchio
+## Needed Libraries:
 - numpy
 - nltk
 - colletions
@@ -22,8 +21,8 @@ and follow the prompts
 ### How to evalue the third and second files:
 - run a script and test them
 
-## project 1 - text categorization and label prediction - Navie Bayse
-### Needed Libraries:
+# project 1 - text categorization and label prediction - Navie Bayse
+## Needed Libraries:
 - numpy
 - nltk
 - colletions
